@@ -1,6 +1,6 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 
-die "Prints the product of the arguments.\nUsage: $0 [number]...\n" if(@ARGV < 2);
+die "Prints the product of the arguments.\nUsage: $0 <number> <number>...\n" if(@ARGV < 2);
 
 my $total = shift;
 foreach(@ARGV) {

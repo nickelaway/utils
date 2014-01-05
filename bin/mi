@@ -1,6 +1,6 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 
-die "Prints the value of the first argument with the remaining arguments subtracted from it.\nUsage: $0 [inital value] [number]...\n" if(@ARGV < 2);
+die "Prints the value of the first argument with the remaining arguments subtracted from it.\nUsage: $0 <inital value> <number>...\n" if(@ARGV < 2);
 
 my $total = shift;
 foreach(@ARGV) {
