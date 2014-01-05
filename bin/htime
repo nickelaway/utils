@@ -1,0 +1,26 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+my @files;
+if(@ARGV){
+    ## take the files from the command line if they are there
+    @files = @ARGV;
+}else{
+    ## otherwise read them from stdin
+    while(my $file = <STDIN>){
+        chomp $file;
+        push (@files, $file);
+    }
+}
+
+foreach my $file(@files){
+    my @tokens = split(/\s+/, $file);
+    foreach my $token(@tokens){
+	if($token =~ m/\d+/){
+	    $token =~ s/(\d+)/sprintf("%iH %iM %iS{$1}", $1\/60\/60,$1\/60%60,$1%60)/se;
+	}
+	print "$token ";
+    }
+    print "\n";
+}
