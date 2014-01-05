@@ -1,0 +1,10 @@
+#!/usr/bin/perl
+
+die "Prints the sum of the arguments.\nUsage: $0 [number]...\n" if(@ARGV < 2);
+
+my $total = 0;
+foreach(@ARGV) {
+    $total += $_;
+}
+
+print "$total\n";
