@@ -1,0 +1,10 @@
+#!/usr/bin/env perl
+
+die "Prints the value of the first argument divided my the remaining arguments.\nUsage: $0 <initial value> <number>...\n" if(@ARGV < 2);
+
+my $total = shift;
+foreach(@ARGV) {
+    $total /= $_;
+}
+
+print "$total\n";
