@@ -1,0 +1,6 @@
+#!/bin/env bash
+
+for file in "$@"; do
+    length=$(midentify "$file" | grep ID_LENGTH | cut -d '=' -f 2)
+    echo -e "$length\t($file)"
+done
