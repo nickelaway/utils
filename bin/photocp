@@ -1,0 +1,56 @@
+#!/bin/bash
+
+dir=$1
+[ ! -d "$dir" ] && echo Usage: $0 [path to mounted memory card] && exit 1
+
+function extractNumber {
+	echo $1 | grep -Eo "[0-9]*"
+}
+
+function copyNewPhotos {
+  suffix="$1"
+
+  last_number=0
+  if [ -e $HOME/.config/photocp/last_${suffix} ]; then
+        last=$(cat $HOME/.config/photocp/last_${suffix})
+        echo "Looking for images after $last"
+        last_number=$(extractNumber $last)
+  else
+        echo "Copying all images"
+  fi
+
+  counter=1
+  while read line; do
+     current_number=$(extractNumber $(basename "$line"))
+       if [ $current_number -gt $last_number ]; then
+	 filename=$(basename "$line")
+	 echo "$counter. Copying $filename"
+         copyPhoto "$line"
+	 let counter=$counter+1
+       fi
+  done < <(find "$dir" -iname "*.$suffix")
+}
+
+function copyPhoto {
+	path=$1
+	suffix=$(echo "$path" | awk -F '.'  '{print tolower($NF)}')
+	path_for_date="$path"
+	filename=$(basename "$line")
+	if [ $suffix == "nef" ]; then
+	  path_for_date=$(echo ${path:0:${#path} - 4}.JPG)
+	fi
+	
+	if [ -e "$path_for_date" ]; then
+	  image_date=$(identify -verbose "$path_for_date" | grep "exif:DateTimeOriginal" | tr -s ' ' | cut -d ' ' -f 3 | tr ':' '_')
+	else
+	  image_date="unknown"
+	fi
+
+	destination_dir=${HOME}/Photos/${image_date}/${suffix}/
+	mkdir -p "$destination_dir"
+	cp "$path" "$destination_dir" && echo $filename > $HOME/.config/photocp/last_${suffix}
+}
+
+copyNewPhotos jpg
+copyNewPhotos nef
+
