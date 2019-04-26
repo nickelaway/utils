@@ -1,0 +1,28 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+my $readLine;
+if (@ARGV) {
+    $readLine = sub {return shift(@ARGV) . "\n" if(@ARGV)};
+} else {
+    $readLine = sub {return <STDIN>};
+}
+
+while(my $line = $readLine->()) {
+    my $data = "";
+    my @tokens = split(/,/, $line);
+    foreach my $token (@tokens) {
+	    if ($token =~ m/.*?(\d+).*/) {
+		my $asciiChar = $1;
+		if($asciiChar > 31 && $asciiChar < 127) {
+			my $byte = chr($asciiChar);
+			$data .= $byte;
+		} else {
+			$data .= '?';
+		}
+	    }
+    }
+    print "$data\n"
+}
