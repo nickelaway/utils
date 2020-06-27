@@ -16,4 +16,5 @@ function hashFile {
 
 export -f hashFile
 
+echo "## $(date)"
 find . -type f -exec bash -c 'hashFile "$0"' {} \;
