@@ -4,4 +4,16 @@
 
 cd "$1" || exit 1
 
-find . -type f -exec md5sum {} \;
+function hashFile {
+	fullFilename="$*"
+	if [[ ${fullFilename^^} == *NEF.GZ ]]; then
+		hash=$(zcat "$*" | md5sum - | cut -d ' ' -f 1)
+		nefFilename=${fullFilename:0:${#fullFilename} - 3}
+		echo "${hash}  ${nefFilename}"
+	fi
+	md5sum "$fullFilename"
+}
+
+export -f hashFile
+
+find . -type f -exec bash -c 'hashFile "$0"' {} \;
