@@ -1,0 +1,9 @@
+#!/bin/env bash
+
+for file in "$@"; do
+	echo "## $file"
+	unzip -p "${file}" META-INF/MANIFEST.MF
+done
+
+
+
