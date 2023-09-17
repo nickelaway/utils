@@ -1,0 +1,16 @@
+#!/bin/bash
+
+dir=.
+[ -d "$1" ] && dir="$1"
+
+function checkFile {
+	filename="$*"
+	output=$(exiv2 "$filename" 2>/dev/null) && {
+		echo -e "${output}\n" | photofp
+	}
+}
+
+export -f checkFile
+
+find "$dir" -type f -exec bash -c 'checkFile "$0"' {} \;
+

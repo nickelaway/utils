@@ -1,0 +1,15 @@
+#!/bin/bash
+
+filename=""
+timestamp=""
+while read -r line; do
+#  echo "$line"
+  output=$(echo "$line" | grep -oP "File name\s+:\s\K.*") && filename=$output
+  output=$(echo "$line" | grep -oP "Image timestamp\s+:\s\K.*") && timestamp=$(echo $output | tr ' ' '_')
+
+  echo "$line" | grep -E --silent "^\s*$" && {
+	[ -n "$filename" ] &&  echo "$timestamp ${filename}"
+  	filename=""
+  }
+done
+
