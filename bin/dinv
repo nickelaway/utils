@@ -1,0 +1,69 @@
+#!/bin/bash 
+
+## A simple utility for using Direnv, without automatically running it upon opening a new shell
+## Instead, it will update your bash prompt to indicate if you need to run it. 
+## See `dinv setup` for what you should add to .bashrc
+
+function readPattern {
+	pattern="$1"
+	let pattern_length=${#pattern}+2
+	direnv status | grep "${pattern}" | cut -c ${pattern_length}-
+}
+
+function expected {
+	readPattern "Found RC path"
+}
+
+function actual {
+	readPattern "Loaded RC path"
+}
+
+function allowed {
+	readPattern "Found RC allowed"
+}
+
+function status {
+	allowed=$(allowed)
+	if [ "$allowed" == "false" ]; then
+		echo -en '\e[31mdirenv allow \e[0m'
+		return
+	fi
+	expected=$(expected)
+	actual=$(actual)
+	if [ "$expected" != "$actual" ]; then
+		echo -en '\e[31mdodinv \e[0m'
+	fi
+}
+
+function apply() {
+	output=$(direnv export bash)
+	if [ "$?" == "0" ]; then
+		echo -ne "$output"
+	fi
+}
+
+function setup() {
+	echo alias dodinv=\'eval \$\(dinv apply\)\'
+	echo export PROMPT_COMMAND=\"dinv status\"
+}
+
+case $1 in 
+	expected)
+		expected
+		;;
+	actual)
+		actual
+		;;
+	allowed)
+		allowed
+		;;
+	status)
+		status
+		;;
+	apply)
+		apply
+		;;
+	setup)
+		setup
+		;;
+esac
