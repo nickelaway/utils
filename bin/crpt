@@ -1,0 +1,4 @@
+#!/bin/bash
+
+openssl aes-256-cbc -a -salt -pbkdf2 -in /dev/stdin -out /dev/stdout
+
