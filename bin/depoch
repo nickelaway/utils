@@ -13,10 +13,14 @@ if (@ARGV) {
 
 sub parseEpochTime {
     my $val = shift;
-    return strftime("{%Y-%m-%d_%H:%M:%S}",localtime(substr($val, 0, 10)));
+    my $sub = "";
+    if(length($val) > 10) {
+	    $sub="." . substr($val, 10);
+    }
+    return strftime("{%Y-%m-%d_%H:%M:%S$sub}",localtime(substr($val, 0, 10)));
 }
 
 while(my $line = $readLine->()) {
-    $line =~ s/^((.*[^\d])?)(\d{13}|\d{10})([^\d].*)?$/"$1$3" . parseEpochTime($3) . "$4"/ge;
+    $line =~ s/^((.*[^\d])?)(\d{19}|\d{13}|\d{10})([^\d].*)?$/"$1$3" . parseEpochTime($3) . "$4"/ge;
     print $line;
 }
