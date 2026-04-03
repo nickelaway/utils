@@ -1,10 +1,12 @@
-#!/usr/bin/env perl
+#!/usr/bin/env bash
 
-die "Prints the product of the arguments.\nUsage: $0 <number> <number>...\n" if(@ARGV < 2);
+[ "$#" -lt 2 ] && { echo "Prints the product of the arguments.
+Usage: $0 <number> <number>..." >&2; exit 1; }
 
-my $total = shift;
-foreach(@ARGV) {
-    $total *= $_;
-}
+total=$1
+shift
+for n in "$@"; do
+    total=$(echo "$total * $n" | bc -l)
+done
 
-print "$total\n";
+echo "$total" | sed 's/\.0*$//;s/\(\.[0-9]*[1-9]\)0*$/\1/;s/^\./0./;s/^-\./-0./'
