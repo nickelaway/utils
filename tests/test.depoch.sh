@@ -51,6 +51,15 @@ run_test "--seconds --millis"             "1234567890{2009-02-13_23:31:30} 12345
 run_test "--seconds --nanos"              "1234567890{2009-02-13_23:31:30} 1234567890123 1234567890123456789{2009-02-13_23:31:30.123456789}"  "$ALL"  --seconds --nanos
 run_test "--millis --nanos"               "1234567890 1234567890123{2009-02-13_23:31:30.123} 1234567890123456789{2009-02-13_23:31:30.123456789}"  "$ALL"  --millis --nanos
 
+# --tz
+run_test "default tz (no suffix)"         "1234567890{2009-02-13_23:31:30}"           "1234567890"
+run_test "--tz=UTC appends Z"             "1234567890{2009-02-13_23:31:30Z}"          "1234567890"  --tz=UTC
+run_test "--tz UTC (space form)"          "1234567890{2009-02-13_23:31:30Z}"          "1234567890"  --tz UTC
+run_test "--tz=America/New_York"          "1234567890{2009-02-13_18:31:30-05:00}"     "1234567890"  --tz=America/New_York
+run_test "--tz=Asia/Kolkata (+05:30)"     "1234567890{2009-02-14_05:01:30+05:30}"     "1234567890"  --tz=Asia/Kolkata
+run_test "--tz with millis"               "1234567890123{2009-02-13_23:31:30.123Z}"   "1234567890123"  --tz=UTC
+run_test "--tz with --seconds"            "1234567890{2009-02-13_18:31:30-05:00}"     "1234567890"  --tz=America/New_York --seconds
+
 echo
 echo "Results: $PASS passed, $FAIL failed"
 [ "$FAIL" -eq 0 ]

@@ -5,7 +5,19 @@ format_epoch() {
     local sec="${val:0:10}"
     local subsec=""
     [[ "${#val}" -gt 10 ]] && subsec=".${val:10}"
-    date -d "@$sec" "+{%Y-%m-%d_%H:%M:%S${subsec}}"
+
+    local tz_suffix=""
+    if [[ "$TZ_SPECIFIED" == true ]]; then
+        local offset
+        offset=$(TZ="$TZ" date -d "@$sec" "+%z")
+        if [[ "$offset" == "+0000" ]]; then
+            tz_suffix="Z"
+        else
+            tz_suffix="${offset:0:3}:${offset:3:2}"
+        fi
+    fi
+
+    TZ="$TZ" date -d "@$sec" "+{%Y-%m-%d_%H:%M:%S${subsec}${tz_suffix}}"
 }
 
 process_line() {
@@ -27,11 +39,15 @@ process_line() {
 }
 
 LENGTHS=()
+TZ="UTC"
+TZ_SPECIFIED=false
 while [[ "$1" == --* ]]; do
     case "$1" in
-        --seconds) LENGTHS+=(10) ;;
-        --millis)  LENGTHS+=(13) ;;
-        --nanos)   LENGTHS+=(19) ;;
+        --seconds)  LENGTHS+=(10) ;;
+        --millis)   LENGTHS+=(13) ;;
+        --nanos)    LENGTHS+=(19) ;;
+        --tz=*)     TZ="${1#--tz=}"; TZ_SPECIFIED=true ;;
+        --tz)       TZ="$2"; TZ_SPECIFIED=true; shift ;;
         *) echo "Unknown option: $1" >&2; exit 1 ;;
     esac
     shift
