@@ -41,16 +41,16 @@ run_test_stdin "stdin 1000"      "1,000"          "1000"
 run_test "commas input commas"   "1,000"          1,000
 
 # --bytes
-run_test "500 bytes"             "500B"           --bytes 500
-run_test "1024 bytes"            "1KB"            --bytes 1024
-run_test "1536 bytes"            "1.5KB"          --bytes 1536
-run_test "1048576 bytes"         "1MB"            --bytes 1048576
-run_test "1572864 bytes"         "1.5MB"          --bytes 1572864
-run_test "1073741824 bytes"      "1GB"                        --bytes 1073741824
-run_test "1234567890 bytes"      "1.14978094585239887237GB"   --bytes 1234567890
-run_test "1099511627776 bytes"   "1TB"            --bytes 1099511627776
-run_test "commas input bytes"    "1KB"            --bytes 1,024
-run_test_stdin "stdin bytes"     "1KB"            "1,024" --bytes
+run_test "500 bytes"             "500 B"           --bytes 500
+run_test "1024 bytes"            "1 KB"            --bytes 1024
+run_test "1536 bytes"            "1.5 KB"          --bytes 1536
+run_test "1048576 bytes"         "1 MB"            --bytes 1048576
+run_test "1572864 bytes"         "1.5 MB"          --bytes 1572864
+run_test "1073741824 bytes"      "1 GB"                        --bytes 1073741824
+run_test "1234567890 bytes"      "1.14978094585239887237 GB"   --bytes 1234567890
+run_test "1099511627776 bytes"   "1 TB"            --bytes 1099511627776
+run_test "commas input bytes"    "1 KB"            --bytes 1,024
+run_test_stdin "stdin bytes"     "1 KB"            "1,024" --bytes
 
 # --seconds
 run_test "45s"                   "45 Seconds"                         --seconds 45
