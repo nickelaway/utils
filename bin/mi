@@ -3,9 +3,10 @@
 [ "$#" -lt 2 ] && { echo "Prints the value of the first argument with the remaining arguments subtracted from it.
 Usage: $0 <initial value> <number>..." >&2; exit 1; }
 
-total=$1
+total="${1//,/}"
 shift
 for n in "$@"; do
+    n="${n//,/}"
     total=$(echo "$total - $n" | bc -l)
 done
 

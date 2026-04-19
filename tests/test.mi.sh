@@ -22,6 +22,8 @@ run_test "mi 5 2.5"          "2.5"                      5 2.5
 run_test "mi 1 1.5"          "-0.5"                     1 1.5
 run_test "mi 0 0.5"          "-0.5"                     0 0.5
 run_test "mi 10 3"           "7"                        10 3
+run_test "mi 1,000 10"       "990"                      1,000 10
+run_test "mi 1,000 2,000"    "-1000"                    1,000 2,000
 
 echo
 echo "Results: $PASS passed, $FAIL failed"
