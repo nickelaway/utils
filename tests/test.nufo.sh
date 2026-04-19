@@ -46,7 +46,8 @@ run_test "1024 bytes"            "1KB"            --bytes 1024
 run_test "1536 bytes"            "1.5KB"          --bytes 1536
 run_test "1048576 bytes"         "1MB"            --bytes 1048576
 run_test "1572864 bytes"         "1.5MB"          --bytes 1572864
-run_test "1073741824 bytes"      "1GB"            --bytes 1073741824
+run_test "1073741824 bytes"      "1GB"                        --bytes 1073741824
+run_test "1234567890 bytes"      "1.14978094585239887237GB"   --bytes 1234567890
 run_test "1099511627776 bytes"   "1TB"            --bytes 1099511627776
 run_test "commas input bytes"    "1KB"            --bytes 1,024
 run_test_stdin "stdin bytes"     "1KB"            "1,024" --bytes
