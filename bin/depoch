@@ -38,6 +38,54 @@ process_line() {
     echo "${result}${remaining}"
 }
 
+normalize_and_validate_tz() {
+    local tz="$1"
+    if [[ "$tz" =~ ^([+-])([0-9]{2})([0-9]{2})$ ]]; then
+        local sign="${BASH_REMATCH[1]}"
+        local hours=$(( 10#${BASH_REMATCH[2]} ))
+        local mins=$(( 10#${BASH_REMATCH[3]} ))
+        if [[ "$hours" -gt 14 || "$mins" -gt 59 ]]; then
+            echo "Invalid timezone offset: $tz" >&2; exit 1
+        fi
+        local posix_sign
+        [[ "$sign" == "+" ]] && posix_sign="-" || posix_sign="+"
+        if [[ "$mins" -eq 0 ]]; then
+            echo "UTC${posix_sign}${hours}"
+        else
+            printf "UTC%s%d:%02d\n" "$posix_sign" "$hours" "$mins"
+        fi
+    else
+        if [[ ! -f "/usr/share/zoneinfo/$tz" ]]; then
+            echo "Invalid timezone: $tz" >&2; exit 1
+        fi
+        echo "$tz"
+    fi
+}
+
+usage() {
+    cat >&2 <<EOF
+Usage: $(basename "$0") [OPTIONS] [input...]
+
+Finds epoch timestamps in text and appends a human-readable date.
+Reads from arguments or stdin if no input is given.
+
+Options:
+  --seconds     Match 10-digit (second) timestamps
+  --millis      Match 13-digit (millisecond) timestamps
+  --nanos       Match 19-digit (nanosecond) timestamps
+                (default: match all three)
+
+  --tz <zone>   Convert timestamps to the given timezone.
+                Named zones:   UTC, America/New_York, Europe/London, Asia/Kolkata
+                Offset format: -0300, +0530, +0000
+
+Examples:
+  echo 1234567890 | $(basename "$0")
+  echo 1234567890 | $(basename "$0") --tz=-0300
+  $(basename "$0") --tz=America/New_York --seconds 1234567890
+EOF
+}
+
 LENGTHS=()
 TZ="UTC"
 TZ_SPECIFIED=false
@@ -46,9 +94,10 @@ while [[ "$1" == --* ]]; do
         --seconds)  LENGTHS+=(10) ;;
         --millis)   LENGTHS+=(13) ;;
         --nanos)    LENGTHS+=(19) ;;
-        --tz=*)     TZ="${1#--tz=}"; TZ_SPECIFIED=true ;;
-        --tz)       TZ="$2"; TZ_SPECIFIED=true; shift ;;
-        *) echo "Unknown option: $1" >&2; exit 1 ;;
+        --tz=*)     TZ=$(normalize_and_validate_tz "${1#--tz=}") || exit 1; TZ_SPECIFIED=true ;;
+        --tz)       TZ=$(normalize_and_validate_tz "$2") || exit 1; TZ_SPECIFIED=true; shift ;;
+        --help)     usage; exit 0 ;;
+        *) echo "Unknown option: $1" >&2; echo >&2; usage; exit 1 ;;
     esac
     shift
 done
