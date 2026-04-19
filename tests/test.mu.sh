@@ -24,6 +24,8 @@ run_test "mu 2 0.25"          "0.5"                     2 0.25
 run_test "mu 5 2 3"           "30"                      5 2 3
 run_test "mu 1,000 10"        "10000"                   1,000 10
 run_test "mu 1,000 2,000"     "2000000"                 1,000 2,000
+run_test "mu -h 1000 10"      "10,000"                  -h 1000 10
+run_test "mu -h 1000 2000"    "2,000,000"               -h 1000 2000
 
 echo
 echo "Results: $PASS passed, $FAIL failed"

@@ -1,7 +1,18 @@
 #!/usr/bin/env bash
 
+human=0
+[ "$1" = "-h" ] && { human=1; shift; }
+
 [ "$#" -lt 2 ] && { echo "Prints the value of the first argument divided by the remaining arguments.
-Usage: $0 <initial value> <number>..." >&2; exit 1; }
+Usage: $0 [-h] <initial value> <number>..." >&2; exit 1; }
+
+format_commas() {
+    local num="$1" sign=""
+    [[ "$num" == -* ]] && { sign="-"; num="${num#-}"; }
+    local int="${num%%.*}" dec="${num#"${num%%.*}"}"
+    int=$(echo "$int" | rev | sed 's/\([0-9]\{3\}\)/\1,/g;s/,$//' | rev)
+    echo "${sign}${int}${dec}"
+}
 
 total="${1//,/}"
 shift
@@ -10,4 +21,6 @@ for n in "$@"; do
     total=$(echo "$total / $n" | bc -l)
 done
 
-echo "$total" | sed 's/\.0*$//;s/\(\.[0-9]*[1-9]\)0*$/\1/;s/^\./0./;s/^-\./-0./'
+result=$(echo "$total" | sed 's/\.0*$//;s/\(\.[0-9]*[1-9]\)0*$/\1/;s/^\./0./;s/^-\./-0./')
+[ "$human" -eq 1 ] && result=$(format_commas "$result")
+echo "$result"

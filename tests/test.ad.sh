@@ -24,6 +24,10 @@ run_test "ad 1 2 3"          "6"                        1 2 3
 run_test "ad 0.1 0.2"        "0.3"                      0.1 0.2
 run_test "ad 1,000 10"       "1010"                     1,000 10
 run_test "ad 1,000 2,000"    "3000"                     1,000 2,000
+run_test "ad -h 1000 10"     "1,010"                    -h 1000 10
+run_test "ad -h 1000000 1"   "1,000,001"                -h 1000000 1
+run_test "ad -h 0.5 0.5"     "1"                        -h 0.5 0.5
+run_test "ad -h 1234.5 0.5"  "1,235"                    -h 1234.5 0.5
 
 echo
 echo "Results: $PASS passed, $FAIL failed"

@@ -24,6 +24,8 @@ run_test "dv 0 5"             "0"                       0 5
 run_test "dv 1 -2"            "-0.5"                    1 -2
 run_test "dv 1,000 10"        "100"                     1,000 10
 run_test "dv 1,000,000 1,000" "1000"                    1,000,000 1,000
+run_test "dv -h 10000 2"      "5,000"                   -h 10000 2
+run_test "dv -h 1 2"          "0.5"                     -h 1 2
 
 echo
 echo "Results: $PASS passed, $FAIL failed"
