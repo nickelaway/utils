@@ -1,0 +1,104 @@
+#!/usr/bin/env bash
+
+mode="commas"
+
+format_commas() {
+    local num="$1" sign=""
+    [[ "$num" == -* ]] && { sign="-"; num="${num#-}"; }
+    local int="${num%%.*}" dec="${num#"${num%%.*}"}"
+    int=$(echo "$int" | rev | sed 's/\([0-9]\{3\}\)/\1,/g;s/,$//' | rev)
+    echo "${sign}${int}${dec}"
+}
+
+format_bytes() {
+    local num="$1" result unit divisor
+    if [ "$(echo "$num >= 1099511627776" | bc)" -eq 1 ]; then
+        unit="TB"; divisor=1099511627776
+    elif [ "$(echo "$num >= 1073741824" | bc)" -eq 1 ]; then
+        unit="GB"; divisor=1073741824
+    elif [ "$(echo "$num >= 1048576" | bc)" -eq 1 ]; then
+        unit="MB"; divisor=1048576
+    elif [ "$(echo "$num >= 1024" | bc)" -eq 1 ]; then
+        unit="KB"; divisor=1024
+    else
+        echo "${num}B"
+        return
+    fi
+    result=$(echo "scale=3; $num / $divisor" | bc | sed 's/\.0*$//;s/\(\.[0-9]*[1-9]\)0*$/\1/;s/^\./0./')
+    echo "${result}${unit}"
+}
+
+format_seconds() {
+    local num="$1"
+    local total
+    total=$(echo "$num / 1" | bc)
+    local days=$(( total / 86400 ))
+    local hours=$(( (total % 86400) / 3600 ))
+    local mins=$(( (total % 3600) / 60 ))
+    local secs=$(( total % 60 ))
+    local result=""
+    [ "$days"  -gt 0 ] && result+="${days} $([ "$days"  -eq 1 ] && echo Day    || echo Days) "
+    [ "$hours" -gt 0 ] && result+="${hours} $([ "$hours" -eq 1 ] && echo Hour   || echo Hours) "
+    [ "$mins"  -gt 0 ] && result+="${mins} $([ "$mins"  -eq 1 ] && echo Minute  || echo Minutes) "
+    [ "$secs"  -gt 0 ] && result+="${secs} $([ "$secs"  -eq 1 ] && echo Second  || echo Seconds)"
+    result="${result% }"
+    [ -z "$result" ] && result="0 Seconds"
+    echo "$result"
+}
+
+format_millis() {
+    local num="$1"
+    local total
+    total=$(echo "$num / 1" | bc)
+    local days=$(( total / 86400000 ))
+    local hours=$(( (total % 86400000) / 3600000 ))
+    local mins=$(( (total % 3600000) / 60000 ))
+    local secs=$(( (total % 60000) / 1000 ))
+    local ms=$(( total % 1000 ))
+    local result=""
+    [ "$days"  -gt 0 ] && result+="${days} $([ "$days"  -eq 1 ] && echo Day         || echo Days) "
+    [ "$hours" -gt 0 ] && result+="${hours} $([ "$hours" -eq 1 ] && echo Hour        || echo Hours) "
+    [ "$mins"  -gt 0 ] && result+="${mins} $([ "$mins"   -eq 1 ] && echo Minute      || echo Minutes) "
+    [ "$secs"  -gt 0 ] && result+="${secs} $([ "$secs"   -eq 1 ] && echo Second      || echo Seconds) "
+    [ "$ms"    -gt 0 ] && result+="${ms} $([ "$ms"       -eq 1 ] && echo Millisecond || echo Milliseconds)"
+    result="${result% }"
+    [ -z "$result" ] && result="0 Milliseconds"
+    echo "$result"
+}
+
+format_number() {
+    local num="${1//,/}"
+    case "$mode" in
+        commas)  format_commas "$num" ;;
+        bytes)   format_bytes "$num" ;;
+        seconds) format_seconds "$num" ;;
+        millis)  format_millis "$num" ;;
+    esac
+}
+
+args=()
+for a in "$@"; do
+    case "$a" in
+        --bytes)   mode="bytes" ;;
+        --seconds) mode="seconds" ;;
+        --millis)  mode="millis" ;;
+        --help)
+            echo "Formats numbers passed as arguments or on stdin.
+Usage: $0 [--bytes|--seconds] [number...]
+  (default) add commas: 1000 -> 1,000
+  --bytes   format as storage units: 1234 -> 1.234KB
+  --seconds format as duration: 65 -> 1M 5S" >&2
+            exit 0 ;;
+        *) args+=("$a") ;;
+    esac
+done
+
+if [ "${#args[@]}" -gt 0 ]; then
+    for n in "${args[@]}"; do
+        format_number "$n"
+    done
+else
+    while IFS= read -r line; do
+        [ -n "$line" ] && format_number "$line"
+    done
+fi
