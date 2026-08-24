@@ -1,0 +1,7 @@
+#!/bin/bash
+
+[ -z "$*" ] && echo Usage: $0 [number of files to list]... && exit 1
+
+num=$1
+
+ls -trQ | tail -${num}
